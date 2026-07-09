@@ -20,6 +20,7 @@ export interface CareerEra {
   description: string;
   stats: EraStats;
   theme: EraTheme;
+  image: string; // Path to real editorial photo
 }
 
 export const careerData: CareerEra[] = [
@@ -36,7 +37,8 @@ export const careerData: CareerEra[] = [
       accent: 'bg-black',
       textAccent: 'text-black',
       gradientBlob: 'radial-gradient(circle at 80% 50%, rgba(0,0,0,0.08) 0%, transparent 60%)'
-    }
+    },
+    image: '/src/assets/santos.webp'
   },
   {
     id: 'barcelona',
@@ -51,7 +53,8 @@ export const careerData: CareerEra[] = [
       accent: 'bg-[#DB0030]',
       textAccent: 'text-[#FDEC00]',
       gradientBlob: 'radial-gradient(circle at 20% 60%, rgba(165,0,68,0.4) 0%, transparent 60%)'
-    }
+    },
+    image: '/src/assets/Barcelona.jpg'
   },
   {
     id: 'psg',
@@ -66,7 +69,8 @@ export const careerData: CareerEra[] = [
       accent: 'bg-[#DA291C]',
       textAccent: 'text-[#CEAB5D]',
       gradientBlob: 'radial-gradient(circle at 70% 30%, rgba(218,41,28,0.15) 0%, transparent 60%)'
-    }
+    },
+    image: '/src/assets/psg.webp'
   },
   {
     id: 'brasil',
@@ -81,6 +85,7 @@ export const careerData: CareerEra[] = [
       accent: 'bg-[#FEDF00]',
       textAccent: 'text-[#FEDF00]',
       gradientBlob: 'radial-gradient(circle at 50% 50%, rgba(254,223,0,0.2) 0%, transparent 70%)'
-    }
+    },
+    image: '/src/assets/brasil.jpg'
   }
 ];
