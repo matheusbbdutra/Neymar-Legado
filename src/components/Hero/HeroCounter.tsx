@@ -24,7 +24,7 @@ export const HeroCounter = ({ phase }: HeroCounterProps) => {
     >
       <FlipNumber 
         value={goals}
-        className="text-[5.5rem] md:text-[7.5rem] font-light tracking-tighter text-[#B89B5E]"
+        className="text-6xl sm:text-7xl md:text-[7.5rem] font-light tracking-tighter text-[#B89B5E]"
       />
       <span className="text-[10px] md:text-xs tracking-[0.6em] text-gray-500 uppercase mt-2 md:mt-4 font-bold select-none">
         Career Goals

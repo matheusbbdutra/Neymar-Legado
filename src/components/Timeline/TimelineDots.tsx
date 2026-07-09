@@ -14,7 +14,7 @@ export const TimelineDots = ({ eras, activeEraIndex }: TimelineDotsProps) => {
   timelineYears.push({ year: '∞', label: 'Legacy' });
 
   return (
-    <div className="absolute left-6 sm:left-12 md:left-20 top-1/2 -translate-y-1/2 flex flex-col items-center gap-4 z-30 select-none mix-blend-difference">
+    <div className="absolute left-6 sm:left-12 md:left-20 top-1/2 -translate-y-1/2 flex flex-col items-center gap-4 z-30 select-none mix-blend-difference hidden md:flex">
       {timelineYears.map((item, idx) => {
         const isActive = idx === activeEraIndex;
         // Wait, activeEraIndex is 0 to 3 for Santos, Barca, PSG, Brasil. If index is Brasil, the next index is Legacy (idx = 4).
