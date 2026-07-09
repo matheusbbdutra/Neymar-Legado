@@ -1,3 +1,8 @@
+import santosImg from '../assets/santos.webp';
+import barcelonaImg from '../assets/Barcelona.jpg';
+import psgImg from '../assets/psg.webp';
+import brasilImg from '../assets/brasil.jpg';
+
 export interface EraTheme {
   bg: string;
   text: string;
@@ -20,7 +25,7 @@ export interface CareerEra {
   description: string;
   stats: EraStats;
   theme: EraTheme;
-  image: string; // Path to real editorial photo
+  image: string; // Will hold the resolved Vite asset URL
 }
 
 export const careerData: CareerEra[] = [
@@ -38,7 +43,7 @@ export const careerData: CareerEra[] = [
       textAccent: 'text-black',
       gradientBlob: 'radial-gradient(circle at 80% 50%, rgba(0,0,0,0.08) 0%, transparent 60%)'
     },
-    image: '/src/assets/santos.webp'
+    image: santosImg
   },
   {
     id: 'barcelona',
@@ -54,7 +59,7 @@ export const careerData: CareerEra[] = [
       textAccent: 'text-[#FDEC00]',
       gradientBlob: 'radial-gradient(circle at 20% 60%, rgba(165,0,68,0.4) 0%, transparent 60%)'
     },
-    image: '/src/assets/Barcelona.jpg'
+    image: barcelonaImg
   },
   {
     id: 'psg',
@@ -70,7 +75,7 @@ export const careerData: CareerEra[] = [
       textAccent: 'text-[#CEAB5D]',
       gradientBlob: 'radial-gradient(circle at 70% 30%, rgba(218,41,28,0.15) 0%, transparent 60%)'
     },
-    image: '/src/assets/psg.webp'
+    image: psgImg
   },
   {
     id: 'brasil',
@@ -86,6 +91,6 @@ export const careerData: CareerEra[] = [
       textAccent: 'text-[#FEDF00]',
       gradientBlob: 'radial-gradient(circle at 50% 50%, rgba(254,223,0,0.2) 0%, transparent 70%)'
     },
-    image: '/src/assets/brasil.jpg'
+    image: brasilImg
   }
 ];
