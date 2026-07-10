@@ -2,6 +2,25 @@
 
 :root {
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --bg-primary: #050505;
+  --bg-secondary: #000000;
+  --text-primary: #ffffff;
+  --text-secondary: #a3a3a3;
+  --accent-gold: #B89B5E;
+  --accent-gold-glow: rgba(184, 155, 94, 0.4);
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --noise-opacity: 0.03;
+}
+
+:root.light-mode {
+  --bg-primary: #fcfbfa;
+  --bg-secondary: #f4f3f0;
+  --text-primary: #0e0e0d;
+  --text-secondary: #5c5c56;
+  --accent-gold: #9e7f41;
+  --accent-gold-glow: rgba(158, 127, 65, 0.4);
+  --border-primary: rgba(14, 14, 13, 0.15);
+  --noise-opacity: 0.015;
 }
 
 /* Smooth Scrolling setup for Lenis */
@@ -28,11 +47,22 @@ html.lenis, html.lenis body {
 body {
   margin: 0;
   padding: 0;
-  background-color: #050505;
-  color: #ffffff;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   overflow-x: hidden;
   font-family: var(--font-sans);
   cursor: none; /* Hide default cursor to use CustomCursor */
+  transition: background-color 0.8s cubic-bezier(0.25, 1, 0.5, 1), color 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Accessible focus styling */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+.interactive:focus-visible {
+  outline: 2px solid var(--accent-gold);
+  outline-offset: 4px;
+  border-radius: 4px;
 }
 
 /* Global styling utilities */

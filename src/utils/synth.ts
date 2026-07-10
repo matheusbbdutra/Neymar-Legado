@@ -2,6 +2,12 @@ class AudioEngine {
   private ctx: AudioContext | null = null;
   private masterVolume: GainNode | null = null;
   private isEnabled: boolean = false;
+  
+  // Drone loop properties
+  private droneOscillators: { osc: OscillatorNode; gain: GainNode }[] = [];
+  private droneFilter: BiquadFilterNode | null = null;
+  private droneMasterGain: GainNode | null = null;
+  private filterModTimer: any = null;
 
   public init() {
     if (this.ctx) return;
@@ -20,14 +26,116 @@ class AudioEngine {
     }
   }
 
-  public toggle(mute: boolean) {
+  public toggle(isMuted: boolean) {
     if (!this.ctx) {
       this.init();
     }
     if (this.masterVolume && this.ctx) {
-      const targetVolume = mute ? 0 : 0.25;
+      const targetVolume = isMuted ? 0 : 0.35;
       this.masterVolume.gain.setValueAtTime(this.masterVolume.gain.value, this.ctx.currentTime);
-      this.masterVolume.gain.linearRampToValueAtTime(targetVolume, this.ctx.currentTime + 0.3);
+      this.masterVolume.gain.linearRampToValueAtTime(targetVolume, this.ctx.currentTime + 0.5);
+      
+      if (!isMuted) {
+        this.startDrone();
+      } else {
+        this.stopDrone();
+      }
+    }
+  }
+
+  private startDrone() {
+    if (!this.ctx || !this.masterVolume) return;
+    
+    // Stop any existing drone first
+    this.stopDrone();
+    
+    const now = this.ctx.currentTime;
+    
+    // Create master drone nodes
+    this.droneFilter = this.ctx.createBiquadFilter();
+    this.droneFilter.type = 'lowpass';
+    this.droneFilter.frequency.setValueAtTime(180, now);
+    
+    this.droneMasterGain = this.ctx.createGain();
+    this.droneMasterGain.gain.setValueAtTime(0, now);
+    
+    // Connect drone master
+    this.droneFilter.connect(this.droneMasterGain);
+    this.droneMasterGain.connect(this.masterVolume);
+    
+    // Cinematic drone frequencies: 
+    // C2 (65.41 Hz), G2 (98.00 Hz), C3 (130.81 Hz), E3 (164.81 Hz)
+    const freqs = [65.41, 98.00, 130.81, 164.81];
+    
+    freqs.forEach((freq, idx) => {
+      if (!this.ctx || !this.droneFilter) return;
+      
+      const osc = this.ctx.createOscillator();
+      const oscGain = this.ctx.createGain();
+      
+      osc.type = idx === 0 ? 'sine' : 'triangle';
+      osc.frequency.setValueAtTime(freq, now);
+      
+      // Detune slightly for lush chorus effect
+      osc.detune.setValueAtTime((Math.random() - 0.5) * 8, now);
+      
+      // Set individual gains to blend nicely
+      const volumeBlend = idx === 0 ? 0.25 : 0.15;
+      oscGain.gain.setValueAtTime(volumeBlend, now);
+      
+      osc.connect(oscGain);
+      oscGain.connect(this.droneFilter);
+      
+      osc.start(now);
+      this.droneOscillators.push({ osc, gain: oscGain });
+    });
+    
+    // Fade in the master drone volume
+    this.droneMasterGain.gain.linearRampToValueAtTime(0.06, now + 2.5);
+    
+    // Modulate filter cutoff slowly over time
+    this.modulateFilter();
+  }
+
+  private modulateFilter() {
+    if (!this.ctx || !this.droneFilter) return;
+    
+    const now = this.ctx.currentTime;
+    const cycle = 8; // seconds
+    const targetFreq = 140 + Math.random() * 180;
+    
+    this.droneFilter.frequency.cancelScheduledValues(now);
+    this.droneFilter.frequency.setValueAtTime(this.droneFilter.frequency.value, now);
+    this.droneFilter.frequency.exponentialRampToValueAtTime(targetFreq, now + cycle);
+    
+    this.filterModTimer = setTimeout(() => {
+      this.modulateFilter();
+    }, cycle * 1000);
+  }
+
+  private stopDrone() {
+    if (this.filterModTimer) {
+      clearTimeout(this.filterModTimer);
+      this.filterModTimer = null;
+    }
+    
+    if (this.droneMasterGain && this.ctx) {
+      const now = this.ctx.currentTime;
+      const gainNode = this.droneMasterGain;
+      gainNode.gain.cancelScheduledValues(now);
+      gainNode.gain.setValueAtTime(gainNode.gain.value, now);
+      gainNode.gain.linearRampToValueAtTime(0, now + 0.8);
+      
+      const oscsToStop = [...this.droneOscillators];
+      this.droneOscillators = [];
+      
+      setTimeout(() => {
+        oscsToStop.forEach(({ osc }) => {
+          try {
+            osc.stop();
+          } catch(e) {}
+        });
+      }, 900);
     }
   }
 
@@ -55,14 +163,12 @@ class AudioEngine {
   public playEraTransition(index: number) {
     if (!this.isEnabled || !this.ctx || !this.masterVolume) return;
     
-    // Resume context if suspended by browser autoplay policy
     if (this.ctx.state === 'suspended') {
       this.ctx.resume();
     }
 
     const now = this.ctx.currentTime;
 
-    // Standard high quality sweep setup
     const osc = this.ctx.createOscillator();
     const filter = this.ctx.createBiquadFilter();
     const gain = this.ctx.createGain();
@@ -72,13 +178,11 @@ class AudioEngine {
     gain.connect(this.masterVolume);
 
     if (index === 1) {
-      // Barcelona (Auge) - Play a rich perfect-fifth harmonic chord
-      // Osc 1 (C4 -> C5 sweep)
+      // Barcelona - perfect-fifth chord sweep
       osc.type = 'sine';
       osc.frequency.setValueAtTime(261.63, now); // C4
       osc.frequency.exponentialRampToValueAtTime(523.25, now + 1.5); 
 
-      // Osc 2 (G4 -> G5 sweep)
       const osc2 = this.ctx.createOscillator();
       const gain2 = this.ctx.createGain();
       osc2.connect(gain2);
